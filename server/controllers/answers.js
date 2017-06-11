@@ -94,6 +94,7 @@ module.exports = {
     Answer.findById(req.params.id)
     .then(result=>{
       result.update({
+        _id : result._id,
         answer : result.answer,
         questionId : result.questionId,
         userId : result.userId,
@@ -131,6 +132,7 @@ module.exports = {
     Answer.findById(req.params.id)
     .then(result=>{
       result.update({
+        _id : result._id,
         answer : req.body.answer || result.answer,
         questionId : req.body.questionId || result.questionId,
         userId : req.decoded.id || result.userId,

@@ -61,10 +61,44 @@ module.exports = {
       res.send(err)
     })
   },
+  updateVoteQuestion : (req, res)=>{
+    Question.findById(req.params.id)
+    .then(result=>{
+      result.update({
+        _id : result._id,
+        title : result.title,
+        question : result.question,
+        userId : result.userId,
+        vote : req.body.vote,
+        voteUp : req.body.voteUp || result.voteUp,
+        voteDown : req.body.voteDown || result.voteDown
+      })
+      .then(result=>{
+        Question.find({})
+        .populate('userId')
+        .then(response=>{
+          res.send({
+            result : response,
+            msg : 'Question Down Vote Added'
+          })
+        })
+        .catch(err=>{
+          res.send(err)
+        })
+      })
+      .catch(error=>{
+        res.send(error)
+      })
+    })
+    .catch(err=>{
+      res.send(err)
+    })
+  },
   updateQuestion : (req, res)=>{
     Question.findById(req.params.id)
     .then(result=>{
       result.update({
+        _id : result._id,
         title : req.body.title || result.title,
         question : req.body.question || result.question,
         userId : req.decoded.id || result.userId,

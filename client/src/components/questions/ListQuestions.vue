@@ -28,11 +28,11 @@
       </div>
     </td>
     <td width="15%" style="text-align:center;">
-      <a class=""><i class="fa fa-thumbs-up"></i></a>
+      <a class="" @click="voteUpQuestion"><i class="fa fa-thumbs-up"></i></a>
       <div class="">
         {{content.vote}}
       </div>
-      <a class=""><i class="fa fa-thumbs-down"></i></a>
+      <a class="" @click="voteDownQuestion"><i class="fa fa-thumbs-down"></i></a>
     </td>
   </tr>
 </template>
@@ -54,6 +54,12 @@ export default {
     },
     confirmEdit : function(){
       this.$emit('confirm-edit')
+    },
+    voteUpQuestion : function(){
+      this.$emit('vote-up-question')
+    },
+    voteDownQuestion : function(){
+      this.$emit('vote-down-question')
     }
   }
 }

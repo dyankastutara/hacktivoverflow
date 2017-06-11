@@ -2,18 +2,19 @@
   <div class="container">
     <div class="columns">
       <div class="column is-one-third">
+        <b-message title="Notification" type="is-success" has-icon v-if="msgSuccess.length > 0">
+          {{msgSuccess}}
+        </b-message>
+        <b-message title="Notification" type="is-warning" has-icon v-if="msg.length > 0">
+          {{msg}}
+        </b-message>
+        <b-message title="Notification" type="is-danger" has-icon v-if="msgErrors.length > 0">
+          {{msgErrors}}
+        </b-message>
       </div>
       <div class="column center">
-        <div id="message" class="ui message justify" v-if="msg.length > 0">
-          <i class="close icon" @click="msgClear"></i>
-          <p>{{msg}}</p>
-        </div>
         <h1>Create your Hacktiv8 Overflow account.</h1>
         <div class="ui center aligned basic segment">
-          <button class="ui facebook button"><i class="facebook icon"></i> Facebook </button>
-          <button class="ui google plus button"><i class="google plus icon"></i> Google Plus </button>
-          <div class="ui horizontal divider">Or</div>
-
           <b-field>
             <b-input placeholder="Name"
             type="text"
@@ -67,7 +68,9 @@ export default {
       email:'',
       password:'',
       image:'',
-      msg:''
+      msg:'',
+      msgSuccess:'',
+      msgErrors:''
     }
   },
   methods:{
@@ -79,25 +82,21 @@ export default {
         image: this.image
       })
       .then(response=>{
+        if(response.data.hasOwnProperty('msg')){
+          this.msg = response.data.msg
+        }else if(response.data.hasOwnProperty('msgSuccess')){
+          this.msgSuccess = response.data.msgSuccess
+        }else{
+          this.msgErrors = response.data.errors.email.message
+        }
         this.email = ''
         this.password = ''
         this.name = ''
         this.image = ''
-        if(response.data.hasOwnProperty('msg')){
-          this.msg = response.data.msg
-        }else if(response.data.hasOwnProperty('message')){
-          this.msg = response.data.message
-        }else{
-          console.log(response.data.token);
-        }
       })
       .catch(err=>{
         console.log(err);
       })
-    },
-    msgClear(){
-      var self = this
-      self.msg = ''
     }
   }
 }

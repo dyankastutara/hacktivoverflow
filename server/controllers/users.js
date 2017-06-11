@@ -20,14 +20,14 @@ module.exports = {
           if(!err){
             res.send({
               result : result,
-              msg : 'Data User Added, You may now log-in with the email you have chosen'
+              msgSuccess : 'Data User Added, You may now log-in with the email you have chosen'
             })
           }else{
             res.send(err)
           }
         })
       }else{
-        res.send({message : 'Email already exists'})
+        res.send({msg : 'Email already exists'})
       }
     })
     .catch(error=>{
@@ -41,7 +41,7 @@ module.exports = {
     .then(result=>{
       if(!result){
         res.send({
-          msg : "Email not Registered"
+          msg : "The email address that you've entered doesn't match any account. Sign up for an account."
         })
       }else{
         if(bcrypt.compareSync(req.body.password, result.password)){
@@ -56,7 +56,7 @@ module.exports = {
           })
         }else{
           res.send({
-            msg : "Password is wrong"
+            msg : "The email or password incorrect"
           })
         }
       }

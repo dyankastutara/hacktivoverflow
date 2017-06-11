@@ -3,12 +3,15 @@
     <div class="columns">
       <div class="column is-one-quarter">
         <b-field>
-          <b-input placeholder="Search..."
+          <b-input placeholder="Belum Digunakan..."
           icon="search">
         </b-input>
       </b-field>
     </div>
     <div class="column">
+      <b-notification has-icon v-if="msg.length > 0">
+        {{msg}}
+      </b-notification>
       <!--  Start Show Question  -->
       <div v-if="showQuestion == true">
         <div class="" style="display:flex; justify-content: flex-end; margin-bottom:2em;">
@@ -22,7 +25,9 @@
             :key="question._id"
             @detail-question="detailQuestion(question._id)"
             @confirm-delete="confirmDeleteQuestion(question._id)"
-            @confirm-edit="confirmEditQuestion(question._id)">
+            @confirm-edit="confirmEditQuestion(question._id)"
+            @vote-up-question="voteUpQuestion(question)"
+            @vote-down-question="voteDownQuestion(question)">
           </list-questions>
         </tbody>
       </table>
@@ -56,7 +61,6 @@
         </tr>
       </table>
       <!--  End Show Detail Question  -->
-
       <!--  Start Show Answers  -->
       <table class="table is-narrow minus answer mid" v-if="list_answers.length>0">
         <tbody>
@@ -69,7 +73,6 @@
           @confirm-upvote-answer="voteUpAnswer(answer)"
           @confirm-downvote-answer="voteDownAnswer(answer)">
         </list-answer>
-        {{msg}}
       </tbody>
     </table>
     <!--  End Show Answers  -->
@@ -81,7 +84,7 @@
       </div>
       <div class="field">
         <p class="control">
-          <textarea class="textarea" v-model="replyAnswer"></textarea>
+          <vue-editor  v-model="replyAnswer"></vue-editor>
         </p>
       </div>
       <div class="">
@@ -210,15 +213,125 @@ export default {
     }
   },
   methods:{
+    voteUpQuestion(quest){
+      var self = this
+      var userId =JSON.parse(localStorage.getItem('isLogin'))
+      if(userId.id==quest.userId._id){
+        this.msg = "You Can't vote your questions";
+      }else{
+        var arrVoteUp = []
+        var listVoteDown = []
+        for(let i=0;i<=self.list_questions.length-1;i++){
+          if(quest._id == self.list_questions[i]._id){
+            for(let j = 0; j<= self.list_questions[i].voteUp.length-1; j++){
+              if(self.list_questions[i].voteUp[j]==userId.id){
+                return alert("")
+              }
+            }
+            if(self.list_questions[i].voteUp.length>0){
+              arrVoteUp.push(self.list_questions[i].voteUp)
+            }
+
+            for(let j =0;j<=self.list_questions[i].voteDown.length-1;j++){
+              if(self.list_questions[i].voteDown[j]==userId.id){
+                self.list_questions[i].voteDown.splice(j,1)
+                listVoteDown = self.list_questions[i].voteDown
+              }
+            }
+          }
+        }
+        arrVoteUp.push(userId.id)
+        axios.patch('http://localhost:3000/api/questions/voteDown/'+quest._id,{
+          voteDown : listVoteDown,
+          voteUp : arrVoteUp,
+          vote : arrVoteUp.length - listVoteDown.length
+        },{
+          headers : {
+            token : localStorage.getItem('token')
+          }
+        })
+        .then(response=>{
+          self.list_questions = response.data.result
+          for(let i=0;i<=self.list_questions.length-1;i++){
+            if(self.list_questions[i]._id == quest._id){
+              for(let j=0;j<=self.detail_questions.length-1;j++){
+                if(self.detail_questions[j]._id == self.list_questions[i]._id){
+                  self.detail_questions.splice(j,1,self.list_questions[i])
+                }
+              }
+            }
+          }
+        })
+        .catch(err=>{
+          console.log(err);
+        })
+      }
+    },
+    voteDownQuestion(quest){
+      var self = this
+      var userId =JSON.parse(localStorage.getItem('isLogin'))
+      if(userId.id==quest.userId._id){
+        this.msg = "You Can't vote your questions";
+      }else{
+        var arrVoteDown = []
+        var listVoteUp = []
+        for(let i=0;i<=self.list_questions.length-1;i++){
+          if(quest._id == self.list_questions[i]._id){
+            for(let j = 0; j<= self.list_questions[i].voteDown.length-1; j++){
+              if(self.list_questions[i].voteDown[j]==userId.id){
+                return {
+                  msg : "Udah Vote"
+                }
+              }
+            }
+            if(self.list_questions[i].voteDown.length>0){
+              arrVoteDown.push(self.list_questions[i].voteDown)
+            }
+
+            for(let j =0;j<=self.list_questions[i].voteUp.length-1;j++){
+              if(self.list_questions[i].voteUp[j]==userId.id){
+                self.list_questions[i].voteUp.splice(j,1)
+                listVoteUp = self.list_questions[i].voteUp
+              }
+            }
+          }
+        }
+        arrVoteDown.push(userId.id)
+        axios.patch('http://localhost:3000/api/questions/voteDown/'+quest._id,{
+          voteDown : arrVoteDown,
+          voteUp : listVoteUp,
+          vote : listVoteUp.length - arrVoteDown.length
+        },{
+          headers : {
+            token : localStorage.getItem('token')
+          }
+        })
+        .then(response=>{
+          self.list_questions = response.data.result
+          for(var i=0;i<=self.list_questions.length-1;i++){
+            if(self.list_questions[i]._id == quest._id){
+              for(var j=0;j<=self.detail_questions.length-1;j++){
+                if(self.detail_questions[j]._id == self.list_questions[i]._id){
+                  self.detail_questions.splice(j,1,self.list_questions[i])
+                }
+              }
+            }
+          }
+        })
+        .catch(err=>{
+          console.log(err);
+        })
+      }
+    },
     voteUpAnswer(ans){
       var self = this
       var userId =JSON.parse(localStorage.getItem('isLogin'))
       if(userId.id==ans.userId._id){
-        console.log("alert");
+        this.msg = "You Can't vote your answer";
       }else{
         var arrVoteUp = []
         var listVoteDown = []
-        for(let i=0;i<self.list_answers.length;i++){
+        for(let i=0;i<=self.list_answers.length-1;i++){
           if(ans._id == self.list_answers[i]._id){
             for(let j = 0; j<= self.list_answers[i].voteUp.length-1; j++){
               if(self.list_answers[i].voteUp[j]==userId.id){
@@ -227,7 +340,7 @@ export default {
                 }
               }
             }
-            if(self.list_answers[i].voteUp>0){
+            if(self.list_answers[i].voteUp.length>0){
               arrVoteUp.push(self.list_answers[i].voteUp)
             }
 
@@ -256,7 +369,6 @@ export default {
               for(let j=0;j<=self.detail_answers.length-1;j++){
                 if(self.detail_answers[j]._id == self.list_answers[i]._id){
                   self.detail_answers.splice(j,1,self.list_answers[i])
-                  console.log(this.voteAnswer());
                 }
               }
             }
@@ -271,17 +383,27 @@ export default {
       var self = this
       var userId =JSON.parse(localStorage.getItem('isLogin'))
       if(userId.id==ans.userId._id){
-        console.log("alert");
+        this.msg = "You Can't vote your answer";
       }else{
         var arrVoteDown = []
-        for(var i=0;i<self.list_answers.length;i++){
+        var listVoteUp = []
+        for(let i=0;i<=self.list_answers.length-1;i++){
           if(ans._id == self.list_answers[i]._id){
-            for(var j = 0; j<= self.list_answers[i].voteDown.length-1; j++){
+            for(let j = 0; j<= self.list_answers[i].voteDown.length-1; j++){
               if(self.list_answers[i].voteDown[j]==userId.id){
-                return "Udah Vote"
-              }else{
-                self.list_answers[i].voteUp[j].splice(j,1)
-                arrVoteDown.push(self.list_answers[i].voteDown[j])
+                return {
+                  msg : "Udah Vote"
+                }
+              }
+            }
+            if(self.list_answers[i].voteDown.length>0){
+              arrVoteUp.push(self.list_answers[i].voteDown)
+            }
+
+            for(let j =0;j<=self.list_answers[i].voteUp.length-1;j++){
+              if(self.list_answers[i].voteUp[j]==userId.id){
+                self.list_answers[i].voteUp.splice(j,1)
+                listVoteUp = self.list_answers[i].voteUp
               }
             }
           }
@@ -289,7 +411,8 @@ export default {
         arrVoteDown.push(userId.id)
         axios.patch('http://localhost:3000/api/answers/voteDown/'+ans._id,{
           voteDown : arrVoteDown,
-          vote : ans.vote-1
+          voteUp : listVoteUp,
+          vote : listVoteUp.length - arrVoteDown.length
         },{
           headers : {
             token : localStorage.getItem('token')
@@ -310,18 +433,6 @@ export default {
         .catch(err=>{
           console.log(err);
         })
-      }
-    },
-    voteQuestion(){
-      for(var i = 0; i<this.list_questions.length;i++){
-        this.list_questions[i].vote = this.list_questions[i].voteUp.length - this.list_questions[i].voteDown.length
-        return this.list_questions[i].vote
-      }
-    },
-    voteAnswer(){
-      for(var i = 0; i<this.detail_answers.length;i++){
-        this.detail_answers[i].vote = this.detail_answers[i].voteUp.length - this.detail_answers[i].voteDown.length
-        return this.detail_answers[i].vote
       }
     },
     updateQuestion(id){
@@ -515,8 +626,6 @@ export default {
       axios.get('http://localhost:3000/api/answers')
       .then(response=>{
         self.list_answers = response.data
-        // this.voteQuestion()
-        // this.voteAnswer()
       })
       .catch(err=>{
         console.log(err);
@@ -529,7 +638,6 @@ export default {
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 .columns{
   margin-top: 20px;

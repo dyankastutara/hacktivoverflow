@@ -2,18 +2,13 @@
   <div class="container">
     <div class="columns">
       <div class="column is-one-third">
+        <b-message title="Notification" type="is-warning" has-icon v-if="msg.length > 0">
+          {{msg}}
+        </b-message>
       </div>
       <div class="column center">
-        <div class="ui negative message" v-if="msg.length > 0">
-          <i class="close icon" @click="msgClear"></i>
-          <div class="header">Login Failed</div>
-          <p>{{msg}}</p>
-        </div>
         <h1>Log-in to your account</h1>
         <div class="ui center aligned basic segment">
-          <button class="ui facebook button"><i class="facebook icon"></i> Facebook </button>
-          <button class="ui google plus button"><i class="google plus icon"></i> Google Plus </button>
-          <div class="ui horizontal divider">Or</div>
           <b-field>
             <b-input placeholder="Email"
             type="text"
@@ -49,25 +44,25 @@ export default {
     }
   },
   methods:{
-    msgClear(){
-      this.msg=''
-    },
     signin(){
+      var self = this
       axios.post('http://localhost:3000/api/users/signin',{
-        email : this.email,
-        password : this.password,
+        email : self.email,
+        password : self.password,
       })
       .then(response=>{
-        this.email = ''
-        this.password = ''
+        console.log(response.data);
         if(response.data.hasOwnProperty('msg')){
-          this.msg = response.data.msg
+          self.msg = response.data.msg
         }else{
           var token = response.data.token
           localStorage.setItem('token',token)
           window.location.href = 'http://localhost:8080/#/'
           location.reload()
         }
+        self.email = ''
+        self.password = ''
+        self.msg=''
       })
       .catch(err=>{
         console.log(err);
