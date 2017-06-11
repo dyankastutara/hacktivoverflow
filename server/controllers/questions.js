@@ -23,13 +23,24 @@ module.exports = {
   },
   insert : (req, res)=>{
     Question.create({
+      title : req.body.title,
       question: req.body.question,
-      userId : req.decoded.id
+      userId : req.decoded.id,
+      vote : req.body.vote || 0,
+      voteUp : req.body.voteUp || [],
+      voteDown : req.body.voteDown || []
     })
     .then(result=>{
-      res.send({
-        result : result,
-        msg : 'Question Added'
+      Question.findById(result._id)
+      .populate('userId')
+      .then(response=>{
+        res.send({
+          result : response,
+          msg : 'Question Added'
+        })
+      })
+      .catch(err=>{
+        res.send(err)
       })
     })
     .catch(err=>{
@@ -54,13 +65,24 @@ module.exports = {
     Question.findById(req.params.id)
     .then(result=>{
       result.update({
+        title : req.body.title || result.title,
         question : req.body.question || result.question,
-        userId : req.decoded.id || result.userId
+        userId : req.decoded.id || result.userId,
+        vote : result.vote,
+        voteUp : result.voteUp,
+        voteDown : result.voteDown
       })
-      .then(response=>{
-        res.send({
-          result : response,
-          msg : 'Your Updated this Question'
+      .then(result=>{
+        Question.findById(req.params.id)
+        .populate('userId')
+        .then(response=>{
+          res.send({
+            result : response,
+            msg : 'Your Updated this Question'
+          })
+        })
+        .catch(err=>{
+          res.send(err)
         })
       })
       .catch(error=>{

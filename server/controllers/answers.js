@@ -35,12 +35,27 @@ module.exports = {
     Answer.create({
       answer: req.body.answer,
       questionId : req.body.questionId,
-      userId : req.decoded.id
+      userId : req.decoded.id,
+      vote : 0,
+      voteUp : [],
+      voteDown : []
     })
     .then(result=>{
-      res.send({
-        result : result,
-        msg : 'Answer Added'
+      Answer.findById(result._id)
+      .populate({
+        path : 'questionId userId',
+        populate : {
+          path : 'userId'
+        }
+      })
+      .then(response=>{
+        res.send({
+          result : response,
+          msg : 'Answer Added'
+        })
+      })
+      .catch(err=>{
+        res.send(err)
       })
     })
     .catch(err=>{
@@ -61,13 +76,67 @@ module.exports = {
       res.send(err)
     })
   },
+  deleteAnswerByQuestionId : (req, res)=>{
+    Answer.remove({
+      questionId : req.params.questionId
+    })
+    .then(result=>{
+      res.send({
+        result : result,
+        msg : 'Your delete Answer by Question Id'
+      })
+    })
+    .catch(err=>{
+      res.send(err)
+    })
+  },
+  updateVoteAnswer : (req, res)=>{
+    Answer.findById(req.params.id)
+    .then(result=>{
+      result.update({
+        answer : result.answer,
+        questionId : result.questionId,
+        userId : result.userId,
+        vote : req.body.vote,
+        voteUp : req.body.voteUp || result.voteUp,
+        voteDown : req.body.voteDown || result.voteDown
+      })
+      .then(result=>{
+        Answer.find({})
+        .populate({
+          path : 'questionId userId',
+          populate : {
+            path : 'userId'
+          }
+        })
+        .then(response=>{
+          res.send({
+            result : response,
+            msg : 'Answer Down Vote Added'
+          })
+        })
+        .catch(err=>{
+          res.send(err)
+        })
+      })
+      .catch(error=>{
+        res.send(error)
+      })
+    })
+    .catch(err=>{
+      res.send(err)
+    })
+  },
   updateAnswer : (req, res)=>{
     Answer.findById(req.params.id)
     .then(result=>{
       result.update({
         answer : req.body.answer || result.answer,
         questionId : req.body.questionId || result.questionId,
-        userId : req.decoded.id || result.userId
+        userId : req.decoded.id || result.userId,
+        vote : req.body.vote || result.vote,
+        voteUp : req.body.voteUp || result.voteUp,
+        voteDown : req.body.voteDown || result.voteDown
       })
       .then(response=>{
         res.send({

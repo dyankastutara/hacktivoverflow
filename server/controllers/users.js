@@ -20,14 +20,14 @@ module.exports = {
           if(!err){
             res.send({
               result : result,
-              msg : 'Data User Added'
+              msg : 'Data User Added, You may now log-in with the email you have chosen'
             })
           }else{
             res.send(err)
           }
         })
       }else{
-        res.send('Email already exists')
+        res.send({message : 'Email already exists'})
       }
     })
     .catch(error=>{
@@ -80,6 +80,21 @@ module.exports = {
         res.send(err)
       }else{
         res.send(result)
+      }
+    })
+  },
+  validate : (req, res)=>{
+    jwt.verify(req.headers.token, process.env.JWT_SECRET, (err, decoded)=>{
+      if(err){
+        res.send(err)
+      }else{
+        if(decoded){
+          res.send(decoded)
+        }else{
+          res.send({
+            msg : 'You can not access this routes'
+          })
+        }
       }
     })
   }

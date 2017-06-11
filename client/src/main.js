@@ -3,7 +3,12 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
+import Buefy from 'buefy'
+import 'buefy/lib/buefy.css'
+import {VueEditor} from 'vue2-editor'
 
+Vue.use(VueEditor)
+Vue.use(Buefy)
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */

@@ -1,5 +1,5 @@
 {
-  "name": "hacktivoverflow",
+  "name": "hacktiv8overflow",
   "version": "1.0.0",
   "description": "A Vue.js project",
   "author": "dyankastutara <dyankastutara19@gmail.com>",
@@ -11,7 +11,8 @@
   },
   "dependencies": {
     "vue": "^2.3.3",
-    "vue-router": "^2.3.1"
+    "vue-router": "^2.3.1",
+    "vue2-editor": "^2.0.24"
   },
   "devDependencies": {
     "autoprefixer": "^6.7.2",

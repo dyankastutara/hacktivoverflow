@@ -14,7 +14,16 @@ var answerSchema = new Schema({
   userId : {
     type:Schema.Types.ObjectId,
     ref:'User'
-  }
+  },
+  vote : Number,
+  voteUp : [{
+    type : Schema.Types.ObjectId,
+    ref : 'User'
+  }],
+  voteDown : [{
+    type : Schema.Types.ObjectId,
+    ref : 'User'
+  }]
 })
 
 var Answer = mongoose.model('Answer', answerSchema)

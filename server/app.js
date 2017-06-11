@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose')
+const cors = require('cors');
 const users = require('./routes/users')
 const questions = require('./routes/questions')
 const answers = require('./routes/answers')
@@ -11,6 +12,7 @@ mongoose.Promise=require('bluebird')
 const app = express()
 
 app.set('port', process.env.PORT || 3000)
+app.use(cors())
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended : false}))
 
