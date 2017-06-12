@@ -36,7 +36,7 @@ module.exports = {
       .then(response=>{
         res.send({
           result : response,
-          msg : 'Question Added'
+          msg : 'Your Question has been added'
         })
       })
       .catch(err=>{
@@ -54,7 +54,7 @@ module.exports = {
     .then(result=>{
       res.send({
         result : result,
-        msg : 'Your delete Question'
+        msg : 'Your Question has been delete'
       })
     })
     .catch(err=>{
@@ -79,7 +79,7 @@ module.exports = {
         .then(response=>{
           res.send({
             result : response,
-            msg : 'Question Down Vote Added'
+            msg : 'You vote on this question'
           })
         })
         .catch(err=>{
@@ -112,7 +112,7 @@ module.exports = {
         .then(response=>{
           res.send({
             result : response,
-            msg : 'Your Updated this Question'
+            msg : 'You change this question'
           })
         })
         .catch(err=>{

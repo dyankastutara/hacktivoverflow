@@ -40,7 +40,7 @@
           <b-field>
 
           </b-field>
-          <b-field>
+          <!-- <b-field>
             <b-input placeholder="Image Url"
                 type="text"
                 icon="image"
@@ -49,7 +49,7 @@
             <p class="control">
                 <button class="button is-primary" >...</button>
             </p>
-          </b-field>
+          </b-field> -->
           <button class="button is-primary" @click="signup">Sign Up</button>
 
         </div>

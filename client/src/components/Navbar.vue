@@ -6,7 +6,7 @@
         <h3>Hacktiv8 Overflow</h3>
       </div>
         <router-link to="/"><a class="nav-item is-tab" id="routing" v-on:click="active(0)">Questions</a></router-link>
-        <router-link to="/user"><a class="nav-item is-tab" id="routing" v-on:click="active(1)">Users</a></router-link>
+        <!-- <router-link to="/user"><a class="nav-item is-tab" id="routing" v-on:click="active(1)">Users</a></router-link> -->
     </div>
     <div class="nav-center">
       <div class="nav-item">

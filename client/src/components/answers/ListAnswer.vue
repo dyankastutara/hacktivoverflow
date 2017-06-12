@@ -15,8 +15,7 @@
       </div>
     </td>
     <td width="75%" style="padding-left:25px;">
-      <div class="justify">
-        {{content.answer}}
+      <div class="justify"  v-html="content.answer">
       </div>
       <div class="justify">
         <small>{{content.userId.name}}</small>

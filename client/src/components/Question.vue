@@ -9,9 +9,6 @@
       </b-field>
     </div>
     <div class="column">
-      <b-notification has-icon v-if="msg.length > 0">
-        {{msg}}
-      </b-notification>
       <!--  Start Show Question  -->
       <div v-if="showQuestion == true">
         <div class="" style="display:flex; justify-content: flex-end; margin-bottom:2em;">
@@ -68,10 +65,11 @@
           v-for="answer in detail_answers"
           :content="answer"
           :key="answer._id"
-          @confirm-delete-answer=""
+          @confirm-delete-answer="confirmDeleteAnswer(answer._id)"
           @confirm-edit-answer=""
           @confirm-upvote-answer="voteUpAnswer(answer)"
-          @confirm-downvote-answer="voteDownAnswer(answer)">
+          @confirm-downvote-answer="voteDownAnswer(answer)"
+          >
         </list-answer>
       </tbody>
     </table>
@@ -213,11 +211,63 @@ export default {
     }
   },
   methods:{
+    confirmDeleteAnswer(aId) {
+      var self = this
+      this.$dialog.confirm({
+        title: 'Deleting Answer',
+        message: 'Are you sure you want to <strong>delete</strong> your answer? This action cannot be undone.',
+        confirmText: 'Delete Answer',
+        type: 'is-danger',
+        hasIcon: true,
+        onConfirm: () => {
+          axios.delete('http://localhost:3000/api/answers/'+aId,{
+            headers : {
+              token : localStorage.getItem('token')
+            }
+          })
+          .then(result=>{
+            var arrAnswer =[]
+            this.list_answers.map(list_answers=>{
+              if(list_answers._id == aId){
+                arrAnswer.push(list_answers)
+              }
+            })
+            for(var i=0;i<arrAnswer.length;i++){
+              for(var j=0;j<self.list_answers.length;j++){
+                if(arrAnswer[i]._id == self.list_answers[j]._id){
+                  self.list_answers.splice(j,1)
+                }
+              }
+            }
+            for(var i=0;i<arrAnswer.length;i++){
+              for(var j=0;j<self.detail_answers.length;j++){
+                if(arrAnswer[i]._id == self.detail_answers[j]._id){
+                  self.detail_answers.splice(j,1)
+                }
+              }
+            }
+            if(result.data.hasOwnProperty('msg')){
+              self.msg = result.data.msg
+              this.$snackbar.open(`${self.msg}`)
+            }
+          })
+          .catch(err=>{
+            console.log(err);
+          })
+        }
+      })
+    },
     voteUpQuestion(quest){
       var self = this
       var userId =JSON.parse(localStorage.getItem('isLogin'))
+      if(userId.id==null){
+        this.$toast.open(`You have not login yet, please login first`)
+        return
+      }
+
       if(userId.id==quest.userId._id){
         this.msg = "You Can't vote your questions";
+        this.$toast.open(`${self.msg}`)
       }else{
         var arrVoteUp = []
         var listVoteDown = []
@@ -225,7 +275,9 @@ export default {
           if(quest._id == self.list_questions[i]._id){
             for(let j = 0; j<= self.list_questions[i].voteUp.length-1; j++){
               if(self.list_questions[i].voteUp[j]==userId.id){
-                return alert("")
+                this.msg = "You have already vote-up";
+                this.$toast.open(`${self.msg}`)
+                return
               }
             }
             if(self.list_questions[i].voteUp.length>0){
@@ -261,6 +313,10 @@ export default {
               }
             }
           }
+          if(response.data.hasOwnProperty('msg')){
+            self.msg = response.data.msg
+            this.$snackbar.open(`${self.msg}`)
+          }
         })
         .catch(err=>{
           console.log(err);
@@ -270,8 +326,13 @@ export default {
     voteDownQuestion(quest){
       var self = this
       var userId =JSON.parse(localStorage.getItem('isLogin'))
+      if(userId.id==null){
+        this.$toast.open(`You have not login yet, please login first`)
+        return
+      }
       if(userId.id==quest.userId._id){
         this.msg = "You Can't vote your questions";
+        this.$toast.open(`${self.msg}`)
       }else{
         var arrVoteDown = []
         var listVoteUp = []
@@ -279,9 +340,9 @@ export default {
           if(quest._id == self.list_questions[i]._id){
             for(let j = 0; j<= self.list_questions[i].voteDown.length-1; j++){
               if(self.list_questions[i].voteDown[j]==userId.id){
-                return {
-                  msg : "Udah Vote"
-                }
+                this.msg = "You have already vote-down";
+                this.$toast.open(`${self.msg}`)
+                return
               }
             }
             if(self.list_questions[i].voteDown.length>0){
@@ -317,6 +378,10 @@ export default {
               }
             }
           }
+          if(response.data.hasOwnProperty('msg')){
+            self.msg = response.data.msg
+            this.$snackbar.open(`${self.msg}`)
+          }
         })
         .catch(err=>{
           console.log(err);
@@ -326,8 +391,13 @@ export default {
     voteUpAnswer(ans){
       var self = this
       var userId =JSON.parse(localStorage.getItem('isLogin'))
+      if(userId.id==null){
+        this.$toast.open(`You have not login yet, please login first`)
+        return
+      }
       if(userId.id==ans.userId._id){
         this.msg = "You Can't vote your answer";
+        this.$toast.open(`${self.msg}`)
       }else{
         var arrVoteUp = []
         var listVoteDown = []
@@ -335,9 +405,9 @@ export default {
           if(ans._id == self.list_answers[i]._id){
             for(let j = 0; j<= self.list_answers[i].voteUp.length-1; j++){
               if(self.list_answers[i].voteUp[j]==userId.id){
-                return {
-                  msg : "Udah Vote"
-                }
+                this.msg = "You have already vote-up";
+                this.$toast.open(`${self.msg}`)
+                return
               }
             }
             if(self.list_answers[i].voteUp.length>0){
@@ -373,6 +443,10 @@ export default {
               }
             }
           }
+          if(response.data.hasOwnProperty('msg')){
+            self.msg = response.data.msg
+            this.$snackbar.open(`${self.msg}`)
+          }
         })
         .catch(err=>{
           console.log(err);
@@ -382,8 +456,13 @@ export default {
     voteDownAnswer(ans){
       var self = this
       var userId =JSON.parse(localStorage.getItem('isLogin'))
+      if(userId.id==null){
+        this.$toast.open(`You have not login yet, please login first`)
+        return
+      }
       if(userId.id==ans.userId._id){
         this.msg = "You Can't vote your answer";
+        this.$toast.open(`${self.msg}`)
       }else{
         var arrVoteDown = []
         var listVoteUp = []
@@ -391,9 +470,9 @@ export default {
           if(ans._id == self.list_answers[i]._id){
             for(let j = 0; j<= self.list_answers[i].voteDown.length-1; j++){
               if(self.list_answers[i].voteDown[j]==userId.id){
-                return {
-                  msg : "Udah Vote"
-                }
+                this.msg = "You have already vote-down";
+                this.$toast.open(`${self.msg}`)
+                return
               }
             }
             if(self.list_answers[i].voteDown.length>0){
@@ -428,6 +507,10 @@ export default {
                 }
               }
             }
+          }
+          if(response.data.hasOwnProperty('msg')){
+            self.msg = response.data.msg
+            this.$snackbar.open(`${self.msg}`)
           }
         })
         .catch(err=>{
@@ -466,6 +549,10 @@ export default {
             }
             self.list_questions.splice(j,1,data)
           }
+        }
+        if(response.data.hasOwnProperty('msg')){
+          self.msg = response.data.msg
+          this.$snackbar.open(`${self.msg}`)
         }
         self.editTitleQuestion=''
         self.editQuestion=''
@@ -527,7 +614,10 @@ export default {
                   self.list_questions.splice(j,1)
                 }
               }
-              this.$toast.open('Question deleted!')
+              if(response.data.hasOwnProperty('msg')){
+                self.msg = response.data.msg
+                this.$toast.open(`${self.msg}`)
+              }
             })
             .catch(err=>{
               console.log(err);
@@ -540,9 +630,8 @@ export default {
       })
     },
     ask(){
-      if(localStorage.getItem('token')==null){
-        alert("not login")
-        console.log("Not Login");
+      if(JSON.parse(localStorage.getItem('isLogin')).id==null){
+        this.$toast.open(`You have not login yet, please login first`)
       }else{
         this.showAsk=true
         this.showQuestion=false
@@ -588,6 +677,10 @@ export default {
         }
       })
       .then(response=>{
+        if(response.data.hasOwnProperty('msg')){
+          self.msg = response.data.msg
+          this.$snackbar.open(`${self.msg}`)
+        }
         self.list_questions.push(response.data.result)
         self.replyAnswer = ''
         self.addQuestion='',
@@ -608,7 +701,12 @@ export default {
         }
       })
       .then(response=>{
+        if(response.data.hasOwnProperty('msg')){
+          self.msg = response.data.msg
+          this.$snackbar.open(`${self.msg}`)
+        }
         self.list_answers.push(response.data.result)
+        self.detail_answers.push(response.data.result)
         self.replyAnswer = ''
         self.addQuestion='',
         self.titleQuestion=''

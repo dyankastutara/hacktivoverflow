@@ -51,7 +51,7 @@ module.exports = {
       .then(response=>{
         res.send({
           result : response,
-          msg : 'Answer Added'
+          msg : 'Your Answer has been added'
         })
       })
       .catch(err=>{
@@ -69,7 +69,7 @@ module.exports = {
     .then(result=>{
       res.send({
         result : result,
-        msg : 'Your delete Answer'
+        msg : 'Your Answer has been delete'
       })
     })
     .catch(err=>{
@@ -83,7 +83,7 @@ module.exports = {
     .then(result=>{
       res.send({
         result : result,
-        msg : 'Your delete Answer by Question Id'
+        msg : 'You delete the question along with the existing answer'
       })
     })
     .catch(err=>{
@@ -113,7 +113,7 @@ module.exports = {
         .then(response=>{
           res.send({
             result : response,
-            msg : 'Answer Down Vote Added'
+            msg : 'You vote on this answer'
           })
         })
         .catch(err=>{
@@ -143,7 +143,7 @@ module.exports = {
       .then(response=>{
         res.send({
           result : response,
-          msg : 'Your Updated this Answer'
+          msg : 'You change this answer'
         })
       })
       .catch(error=>{
