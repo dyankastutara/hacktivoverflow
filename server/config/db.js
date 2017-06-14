@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const mongoDB = 'mongodb://localhost/hacktiv-overflow'
+const mongoDB = 'mongodb://hacktiv8-overflow:hacktiv8-overflow@ds141401.mlab.com:41401/hacktiv8-overflow'
 
 mongoose.connect(mongoDB)
 

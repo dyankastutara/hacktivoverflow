@@ -167,7 +167,37 @@ export default {
   data(){
     return {
       idQuestionForAnswer:null,
-      detail_answers : [],
+      detail_answers : [{
+        _id: null,
+        answer: null,
+        questionId: {
+            _id: null,
+            title: null,
+            question: null,
+            userId: {
+                _id: null,
+                name: null,
+                email: null,
+                password: null,
+                __v: null
+            },
+            vote: null,
+            __v: null,
+            voteDown: [],
+            voteUp: []
+        },
+        userId: {
+            _id: null,
+            name: null,
+            email: null,
+            password: null,
+            __v: null
+        },
+        vote: null,
+        __v: null,
+        voteDown: [],
+        voteUp: []
+    }],
       detail_question:{
         _id : null,
         title:null,
@@ -196,7 +226,37 @@ export default {
         voteUp:[],
         voteDown:[]
       }],
-      list_answers:[],
+      list_answers:[{
+        _id: null,
+        answer: null,
+        questionId: {
+            _id: null,
+            title: null,
+            question: null,
+            userId: {
+                _id: null,
+                name: null,
+                email: null,
+                password: null,
+                __v: null
+            },
+            vote: null,
+            __v: null,
+            voteDown: [],
+            voteUp: []
+        },
+        userId: {
+            _id: null,
+            name: null,
+            email: null,
+            password: null,
+            __v: null
+        },
+        vote: null,
+        __v: null,
+        voteDown: [],
+        voteUp: []
+    }],
       showAsk:false,
       showQuestion:true,
       showAnswer:false,
